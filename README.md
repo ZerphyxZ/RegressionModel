@@ -1,0 +1,58 @@
+# numpynet
+
+A small neural network library for regression, built from scratch with NumPy.
+
+## Install
+
+```bash
+pip install /path/to/RegressionModel
+```
+
+## Use
+
+```python
+from numpynet import MSE, Adam, Dense, Model, ReLU, Scaler
+
+scaler = Scaler(clip=5.0).fit(X_train)  # learn scaling from train data only
+X_train, X_test = scaler.transform(X_train), scaler.transform(X_test)
+
+model = Model(
+    layers=[Dense(8, 64), ReLU(), Dense(64, 1)],
+    loss=MSE(),
+    optimizer=Adam(learning_rate=0.001),
+)
+
+for epoch in range(60):
+    model.train_epoch(X_train, y_train, batch_size=32, rng=rng)
+
+print(model.evaluate(X_test, y_test))
+predictions = model.predict(X_test)
+```
+
+`X` must be shape `(samples, features)` and `y` shape `(samples, 1)`.
+
+## What's inside
+
+| Part | Job |
+|---|---|
+| `Dense` | Learnable layer |
+| `ReLU` | Lets the network learn curves |
+| `MSE` | Scores how wrong predictions are |
+| `SGD`, `Adam` | Update the weights |
+| `Model` | Runs training in shuffled mini-batches |
+| `Scaler` | Scales inputs to mean 0, spread 1, with optional clipping |
+
+## Examples
+
+```bash
+python examples/line.py      # straight line
+python examples/sine.py      # curve
+python examples/housing.py   # real California house prices (needs scikit-learn)
+```
+
+## Tests
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
